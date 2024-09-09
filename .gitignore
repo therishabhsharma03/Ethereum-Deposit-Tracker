@@ -1,0 +1,11 @@
+# Environment variables
+.env
+
+# Logs
+*.log
+
+# Node modules
+node_modules/
+
+# Ignore any sensitive data or config files
+tracker.log
