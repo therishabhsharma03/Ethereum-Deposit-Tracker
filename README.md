@@ -1,5 +1,5 @@
+# **Luganodes-Task-Ethereum-Deposit-Tracker**
 
-# **Ethereum Deposit Tracker**
 
 ## **Table of Contents**
 
@@ -50,6 +50,7 @@ PORT=5000
 TELEGRAM_BOT_TOKEN=<your_telegram_bot_token>
 TELEGRAM_CHAT_ID=<your_telegram_chat_id>
 INFURA_PROJECT_ID=<your_infura_project_id>
+CONTRACT_ADDRESS = <example - 0x00000000219ab540356cBB839Cbe05303d7705Fa>
 PROMETHEUS_PORT=9100
 ```
 
@@ -85,7 +86,7 @@ PROMETHEUS_PORT=9100
 To start the application, run the following command:
 
 ```bash
-npm start
+node app.js
 ```
 
 This will start the server on the port specified in your `.env` file (default is 5000) and begin tracking Ethereum deposits. The application will also expose a `/metrics` endpoint for Prometheus to scrape metrics.
@@ -163,12 +164,6 @@ To enable Telegram notifications:
    - Verify that the `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` are correctly set in the `.env` file.
    - Check that the Telegram bot has permissions to send messages to your chat.
 
-## **Contributing**
 
-If you would like to contribute to this project, feel free to open an issue or submit a pull request. Contributions are always welcome!
 
-## **License**
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
-
-# Luganodes-Task-Ethereum-Deposit-Tracker
