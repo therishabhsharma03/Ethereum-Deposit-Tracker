@@ -141,4 +141,3 @@ The application sends notifications to Telegram when new deposits are detected. 
 - If using WSL 2, ensure proper configuration with Docker Desktop.
 - For Node.js native module issues, try `npm install --no-optional`.
 
-For additional help or to report issues, please open an issue on the GitHub repository.
