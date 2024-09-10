@@ -1,14 +1,17 @@
-# **Luganodes-Task-Ethereum-Deposit-Tracker**
 
+# Luganodes-Task-Ethereum-Deposit-Tracker
 
-## **Table of Contents**
-
+## Table of Contents
 - [Introduction](#introduction)
 - [Features](#features)
 - [Prerequisites](#prerequisites)
 - [Environment Variables](#environment-variables)
 - [Installation](#installation)
 - [Running the Application](#running-the-application)
+- [Docker Setup](#docker-setup)
+  - [Docker Installation](#docker-installation)
+  - [Running the Application with Docker](#running-the-application-with-docker)
+  - [Stopping the Application](#stopping-the-application)
 - [Prometheus and Grafana Setup](#prometheus-and-grafana-setup)
   - [Exposing Metrics](#exposing-metrics)
   - [Prometheus Configuration](#prometheus-configuration)
@@ -19,151 +22,124 @@
 - [Contributing](#contributing)
 - [License](#license)
 
-## **Introduction**
+## Introduction
+The Ethereum Deposit Tracker is designed to monitor ETH deposits to the Beacon Deposit Contract. It listens for real-time deposit events on the Ethereum blockchain, stores deposit information, and sends notifications through a variety of means, including Telegram. Additionally, the project integrates Prometheus and Grafana to visualize metrics and alert on deposit activity.
 
-Ethereum Deposit Tracker is a Node.js-based project that monitors Ethereum Beacon Chain deposits using Infura as a blockchain provider. The tracker captures deposit events from the Beacon Deposit Contract and logs key details such as the block number, timestamp, fee, transaction hash, and public key of the deposit. Additionally, it provides metrics via a `/metrics` endpoint for Prometheus, integrates Telegram notifications for real-time alerts, and visualizes deposit data using a Grafana dashboard.
+## Features
+- Real-time Ethereum deposit tracking.
+- Prometheus integration for metrics collection.
+- Grafana integration for visualization and alerting.
+- Telegram notifications for new deposits.
 
-## **Features**
+## Prerequisites
+- Docker and Docker Compose installed on your machine.
+- Prometheus and Grafana configured for monitoring and alerting.
+- A Telegram bot API token for notifications (optional).
 
-- Monitors Ethereum Beacon Chain deposits in real time.
-- Tracks details of deposits, such as block number, timestamp, gas fee, transaction hash, and public key.
-- Logs deposit data using the `winston` logger.
-- Provides Prometheus metrics to monitor deposits.
-- Sends Telegram alerts for new deposits.
-- Visualizes deposit data in Grafana.
-
-## **Prerequisites**
-
-Before setting up this project, ensure you have the following installed on your machine:
-
-- [Node.js](https://nodejs.org/) (v14 or higher)
-- [NPM](https://www.npmjs.com/)
-- [Prometheus](https://prometheus.io/) (for metrics collection)
-- [Grafana](https://grafana.com/) (for data visualization)
-
-## **Environment Variables**
-
-The project requires the following environment variables for configuration:
-
-```
-PORT=5000
-TELEGRAM_BOT_TOKEN=<your_telegram_bot_token>
-TELEGRAM_CHAT_ID=<your_telegram_chat_id>
-INFURA_PROJECT_ID=<your_infura_project_id>
-CONTRACT_ADDRESS = <example - 0x00000000219ab540356cBB839Cbe05303d7705Fa>
-PROMETHEUS_PORT=9100
-```
-
-- `TELEGRAM_BOT_TOKEN`: Your Telegram bot token for sending notifications.
-- `TELEGRAM_CHAT_ID`: Chat ID where notifications will be sent.
-- `INFURA_PROJECT_ID`: Your Infura project ID for Ethereum blockchain interaction.
-- `PROMETHEUS_PORT`: The port on which Prometheus will scrape the data from your `/metrics` endpoint.
-
-## **Installation**
-
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/yourusername/eth-deposit-tracker.git
-   ```
-
-2. Navigate to the project directory:
-
-   ```bash
-   cd eth-deposit-tracker
-   ```
-
-3. Install the required dependencies:
-
-   ```bash
-   npm install
-   ```
-
-4. Create a `.env` file and fill in the environment variables as described in the [Environment Variables](#environment-variables) section.
-
-## **Running the Application**
-
-To start the application, run the following command:
+## Environment Variables
+Create a `.env` file in the root directory of the project and configure the following:
 
 ```bash
-node app.js
+INFURA_PROJECT_ID=your-infura-project-id
+TELEGRAM_BOT_TOKEN=your-telegram-bot-token
+TELEGRAM_CHAT_ID=your-telegram-chat-id
+ETH_CONTRACT_ADDRESS=0x00000000219ab540356cBB839Cbe05303d7705Fa
+PORT=5000
+PROMETHEUS_PORT=9090
 ```
 
-This will start the server on the port specified in your `.env` file (default is 5000) and begin tracking Ethereum deposits. The application will also expose a `/metrics` endpoint for Prometheus to scrape metrics.
+## Installation
+If running outside Docker, install the dependencies locally:
 
-## **Prometheus and Grafana Setup**
+```bash
+npm install
+```
 
-### **Exposing Metrics**
+## Running the Application
 
-The `/metrics` endpoint exposes the following metrics:
+### Run Locally
+```bash
+node index.js
+```
+However, we recommend running via Docker for easier setup.
 
-- `eth_deposit_count`: Number of new deposits detected.
+## Docker Setup
 
-You can scrape this data using Prometheus.
+### Docker Installation
+Make sure you have Docker installed on your machine. You can follow the official instructions [here](https://docs.docker.com/get-docker/).
 
-### **Prometheus Configuration**
+### Running the Application with Docker
+To build and run the Docker container for the project, use the following commands:
 
-1. Install [Prometheus](https://prometheus.io/download/).
-2. Open your `prometheus.yml` configuration file and add the following target under the `scrape_configs` section:
+#### Build the Docker image:
+```bash
+docker build -t eth-deposit-tracker .
+```
+#### Run the Docker container:
+```bash
+docker-compose up -d
+```
+This will run the application, Prometheus, and Grafana all at once using docker-compose.
 
-   ```yaml
-   scrape_configs:
-     - job_name: 'eth-deposit-tracker'
-       static_configs:
-         - targets: ['localhost:5000']  # Replace with the actual IP and port if needed
-   ```
+### Stopping the Application
+To stop the Docker containers:
 
-3. Start Prometheus and ensure it's scraping the metrics from your `/metrics` endpoint.
+```bash
+docker-compose down
+```
 
-   ```bash
-   prometheus --config.file=prometheus.yml
-   ```
+## Prometheus and Grafana Setup
 
-4. Verify that `localhost:5000` appears in Prometheus under "Targets" (you can access this via `http://localhost:9090/targets`).
+### Exposing Metrics
+Metrics from the Ethereum Deposit Tracker are exposed at the `/metrics` endpoint. The app collects metrics such as deposit counts and exposes them for Prometheus to scrape.
 
-### **Grafana Dashboard**
+### Prometheus Configuration
+In your `prometheus.yml`, make sure you have a job defined for scraping the `/metrics` endpoint:
 
-1. Install [Grafana](https://grafana.com/docs/grafana/latest/setup/install/).
-2. Log in to Grafana (`http://localhost:3000`).
-3. Add Prometheus as a data source.
-4. Create a new dashboard and add a panel to visualize `eth_deposit_count`.
-   - Set the data source to Prometheus.
-   - Query: `eth_deposit_count`
-5. Save the dashboard.
+```yaml
+scrape_configs:
+  - job_name: 'eth-deposit-tracker'
+    static_configs:
+      - targets: ['eth-deposit-tracker:5000']
+```
 
-### **Creating Alerts**
+Once configured, restart Prometheus and ensure it’s successfully scraping the metrics from the deposit tracker.
 
-1. In Grafana, navigate to your dashboard.
-2. Edit the panel where you visualize the deposits.
-3. Go to the "Alerts" tab and create a new alert.
-4. Set conditions (e.g., `eth_deposit_count > 0`).
-5. Configure the notification channel (e.g., Slack, Email, or Telegram) for alerts.
-6. Save the alert configuration.
+### Grafana Dashboard
+1. Install Grafana by following the instructions from [Grafana's official website](https://grafana.com/get).
+2. Add Prometheus as a data source in Grafana.
+3. Create a dashboard to visualize the metrics exposed by the `/metrics` endpoint.
 
-## **Telegram Notifications**
+### Creating Alerts
+You can set up Grafana alerts based on the metrics collected. For example, you can create an alert that triggers when a new Ethereum deposit is detected.
 
-To enable Telegram notifications:
+1. Go to your Grafana dashboard.
+2. Click on "Alert" and configure it based on the metric `eth_deposit_count`.
+3. Set up notifications to be sent via the channel of your choice (e.g., email, Slack).
 
-1. Create a new bot using [BotFather](https://core.telegram.org/bots#botfather) on Telegram and get the `TELEGRAM_BOT_TOKEN`.
-2. Find your chat ID by messaging the bot and using the Telegram API to get your chat ID.
-3. Ensure you have `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` set in your `.env` file.
-4. When a new deposit is detected, a notification with the deposit details will be sent to your Telegram chat.
+## Telegram Notifications
+This project includes a feature for sending Telegram notifications when a new deposit is detected.
 
-## **Troubleshooting**
+### Setup
+1. Create a Telegram bot by following the instructions [here](https://core.telegram.org/bots#botfather).
+2. Add your bot token and chat ID to the `.env` file.
+3. The application will automatically send deposit alerts to your specified chat.
 
-### **Common Issues:**
+## Troubleshooting
 
-1. **Undefined Pubkey:**
-   - Ensure that you're correctly decoding the `data` field using `web3.eth.abi.decodeParameters`. Refer to the contract ABI for the correct parameter types.
+- **Permission Issues**: If Docker commands fail with permission errors, try adding your user to the Docker group:
+  
+  ```bash
+  sudo usermod -aG docker $USER
+  ```
+  Then log out and log back in for changes to take effect.
 
-2. **Prometheus Targets Not Appearing:**
-   - Check the `prometheus.yml` file and ensure the target `localhost:5000` is added correctly under `scrape_configs`.
-   - Ensure that your application exposes the `/metrics` endpoint.
+- **Metrics Not Showing in Prometheus**: Ensure that your `prometheus.yml` configuration is correct, and Prometheus is able to scrape the metrics from the specified `/metrics` endpoint.
 
-3. **Telegram Notifications Not Sending:**
-   - Verify that the `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` are correctly set in the `.env` file.
-   - Check that the Telegram bot has permissions to send messages to your chat.
+- **Telegram Bot Issues**: Double-check your bot token and chat ID in the `.env` file. Also, verify that your bot has permission to send messages to your chat.
 
+## Contributing
+Contributions are welcome! Feel free to open a pull request or issue.
 
-
-
+## License
+This project is licensed under the MIT License.
