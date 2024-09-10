@@ -1,44 +1,57 @@
-
-# Luganodes-Task-Ethereum-Deposit-Tracker
+# Ethereum Deposit Tracker
 
 ## Table of Contents
 - [Introduction](#introduction)
 - [Features](#features)
 - [Prerequisites](#prerequisites)
-- [Environment Variables](#environment-variables)
 - [Installation](#installation)
+- [Configuration](#configuration)
 - [Running the Application](#running-the-application)
-- [Docker Setup](#docker-setup)
-  - [Docker Installation](#docker-installation)
-  - [Running the Application with Docker](#running-the-application-with-docker)
-  - [Stopping the Application](#stopping-the-application)
-- [Prometheus and Grafana Setup](#prometheus-and-grafana-setup)
-  - [Exposing Metrics](#exposing-metrics)
-  - [Prometheus Configuration](#prometheus-configuration)
+  - [Running Locally](#running-locally)
+  - [Running with Docker](#running-with-docker)
+- [Monitoring and Metrics](#monitoring-and-metrics)
+  - [Prometheus Integration](#prometheus-integration)
   - [Grafana Dashboard](#grafana-dashboard)
-  - [Creating Alerts](#creating-alerts)
-- [Telegram Notifications](#telegram-notifications)
+- [Notifications](#notifications)
 - [Troubleshooting](#troubleshooting)
-
+- [Platform-Specific Notes](#platform-specific-notes)
 
 ## Introduction
-The Ethereum Deposit Tracker is designed to monitor ETH deposits to the Beacon Deposit Contract. It listens for real-time deposit events on the Ethereum blockchain, stores deposit information, and sends notifications through a variety of means, including Telegram. Additionally, the project integrates Prometheus and Grafana to visualize metrics and alert on deposit activity.
+The Ethereum Deposit Tracker is a tool designed to monitor ETH deposits to the Beacon Deposit Contract on the Ethereum blockchain. It provides real-time tracking of deposit events, metrics collection via Prometheus, visualization through Grafana, and notifications through Telegram.
 
 ## Features
-- Real-time Ethereum deposit tracking.
-- Prometheus integration for metrics collection.
-- Grafana integration for visualization and alerting.
-- Telegram notifications for new deposits.
+- Real-time monitoring of Ethereum deposits
+- Prometheus integration for metrics collection
+- Grafana dashboard for data visualization
+- Telegram notifications for new deposits
+- Docker support for easy deployment
+- Cross-platform compatibility (Ubuntu and Windows)
 
 ## Prerequisites
-- Docker and Docker Compose installed on your machine.
-- Prometheus and Grafana configured for monitoring and alerting.
-- A Telegram bot API token for notifications (optional).
+- Node.js (v14 or later)
+- Docker and Docker Compose (optional, for containerized deployment)
+- Git
+- Infura Project ID (for Ethereum network access)
+- Telegram Bot Token (optional, for notifications)
 
-## Environment Variables
-Create a `.env` file in the root directory of the project and configure the following:
+## Installation
 
-```bash
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/ethereum-deposit-tracker.git
+   cd ethereum-deposit-tracker
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+## Configuration
+
+Create a `.env` file in the project root directory with the following content:
+
+```
 INFURA_PROJECT_ID=your-infura-project-id
 TELEGRAM_BOT_TOKEN=your-telegram-bot-token
 TELEGRAM_CHAT_ID=your-telegram-chat-id
@@ -47,94 +60,85 @@ PORT=5000
 PROMETHEUS_PORT=9090
 ```
 
-## Installation
-If running outside Docker, install the dependencies locally:
-
-```bash
-npm install
-```
+Replace the placeholder values with your actual Infura Project ID and Telegram bot credentials.
 
 ## Running the Application
 
-### Run Locally
+### Running Locally
+
+To run the application without Docker:
+
 ```bash
 node app.js
 ```
-However, I recommend running via Docker for easier setup.
 
-## Docker Setup
+### Running with Docker
 
-### Docker Installation
-Make sure you have Docker installed on your machine. You can follow the official instructions [here](https://docs.docker.com/get-docker/).
+1. Build the Docker image:
+   ```bash
+   docker build -t ethereum-deposit-tracker .
+   ```
 
-### Running the Application with Docker
-To build and run the Docker container for the project, use the following commands:
+2. Run the containers using Docker Compose:
+   ```bash
+   docker compose up -d
+   ```
 
-#### Build the Docker image:
-```bash
-docker build -t eth-deposit-tracker .
-```
-#### Run the Docker container:
-```bash
-docker compose up -d
-```
-This will run the application, Prometheus, and Grafana all at once using docker-compose.
+This command starts the Ethereum Deposit Tracker, Prometheus, and Grafana containers.
 
-### Stopping the Application
-To stop the Docker containers:
+To stop the application:
 
 ```bash
 docker compose down
 ```
 
-## Prometheus and Grafana Setup
+## Monitoring and Metrics
 
-### Exposing Metrics
-Metrics from the Ethereum Deposit Tracker are exposed at the `/metrics` endpoint. The app collects metrics such as deposit counts and exposes them for Prometheus to scrape.
+### Prometheus Integration
 
-### Prometheus Configuration
-In your `prometheus.yml`, make sure you have a job defined for scraping the `/metrics` endpoint:
+Metrics are exposed at the `/metrics` endpoint. Ensure your `prometheus.yml` includes the following job:
 
 ```yaml
 scrape_configs:
-  - job_name: 'eth-deposit-tracker'
+  - job_name: 'ethereum-deposit-tracker'
     static_configs:
-      - targets: ['eth-deposit-tracker:5000']
+      - targets: ['ethereum-deposit-tracker:5000']
 ```
 
-Once configured, restart Prometheus and ensure it’s successfully scraping the metrics from the deposit tracker.
-
 ### Grafana Dashboard
-1. Install Grafana by following the instructions from [Grafana's official website](https://grafana.com/get).
-2. Add Prometheus as a data source in Grafana.
-3. Create a dashboard to visualize the metrics exposed by the `/metrics` endpoint.
 
-### Creating Alerts
-You can set up Grafana alerts based on the metrics collected. For example, you can create an alert that triggers when a new Ethereum deposit is detected.
+1. Access Grafana at `http://localhost:3000` (default credentials: admin/admin)
+2. Add Prometheus as a data source
+3. Import or create a dashboard to visualize the Ethereum deposit metrics
 
-1. Go to your Grafana dashboard.
-2. Click on "Alert" and configure it based on the metric `eth_deposit_count`.
-3. Set up notifications to be sent via the channel of your choice (e.g., email, Slack).
+## Notifications
 
-## Telegram Notifications
-This project includes a feature for sending Telegram notifications when a new deposit is detected.
-
-### Setup
-1. Create a Telegram bot by following the instructions [here](https://core.telegram.org/bots#botfather).
-2. Add your bot token and chat ID to the `.env` file.
-3. The application will automatically send deposit alerts to your specified chat.
+The application sends notifications to Telegram when new deposits are detected. Ensure you've configured the Telegram bot token and chat ID in the `.env` file.
 
 ## Troubleshooting
 
-- **Permission Issues**: If Docker commands fail with permission errors, try adding your user to the Docker group:
-  
+- **Docker permission issues**: On Ubuntu, add your user to the Docker group:
   ```bash
   sudo usermod -aG docker $USER
   ```
-  Then log out and log back in for changes to take effect.
+  Log out and back in for changes to take effect.
 
-- **Metrics Not Showing in Prometheus**: Ensure that your `prometheus.yml` configuration is correct, and Prometheus is able to scrape the metrics from the specified `/metrics` endpoint.
+- **Metrics not appearing**: Verify Prometheus configuration and ensure it can reach the `/metrics` endpoint.
 
-- **Telegram Bot Issues**: Double-check your bot token and chat ID in the `.env` file. Also, verify that your bot has permission to send messages to your chat.
+- **Telegram notifications not working**: Double-check your bot token and chat ID in the `.env` file.
 
+## Platform-Specific Notes
 
+### Ubuntu
+- Install build essentials if you encounter compilation issues:
+  ```bash
+  sudo apt-get update
+  sudo apt-get install build-essential
+  ```
+
+### Windows
+- Use PowerShell or Command Prompt with admin privileges for Docker commands.
+- If using WSL 2, ensure proper configuration with Docker Desktop.
+- For Node.js native module issues, try `npm install --no-optional`.
+
+For additional help or to report issues, please open an issue on the GitHub repository.
