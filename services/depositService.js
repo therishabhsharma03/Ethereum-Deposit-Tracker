@@ -10,10 +10,10 @@ const { logger } = require('./loggerService');
 const fetchDeposits = async () => {
     try {
         console.log('Fetching deposits...');
-        // const latestBlock = await web3.eth.getBlockNumber(); 
+        const latestBlock = await web3.eth.getBlockNumber(); 
 
         // for testing purpose , as there were no transaction occuring at this perticular time
-        const latestBlock = 20714005; 
+        // const latestBlock = 20714005; 
 
         const events = await web3.eth.getPastLogs({
             fromBlock: latestBlock - 10, 
