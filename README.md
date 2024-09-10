@@ -61,7 +61,7 @@ npm install
 ```bash
 node index.js
 ```
-However, we recommend running via Docker for easier setup.
+However, I recommend running via Docker for easier setup.
 
 ## Docker Setup
 
