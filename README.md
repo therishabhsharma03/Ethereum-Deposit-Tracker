@@ -76,7 +76,7 @@ docker build -t eth-deposit-tracker .
 ```
 #### Run the Docker container:
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 This will run the application, Prometheus, and Grafana all at once using docker-compose.
 
@@ -84,7 +84,7 @@ This will run the application, Prometheus, and Grafana all at once using docker-
 To stop the Docker containers:
 
 ```bash
-docker-compose down
+docker compose down
 ```
 
 ## Prometheus and Grafana Setup
