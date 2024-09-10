@@ -19,8 +19,7 @@
   - [Creating Alerts](#creating-alerts)
 - [Telegram Notifications](#telegram-notifications)
 - [Troubleshooting](#troubleshooting)
-- [Contributing](#contributing)
-- [License](#license)
+
 
 ## Introduction
 The Ethereum Deposit Tracker is designed to monitor ETH deposits to the Beacon Deposit Contract. It listens for real-time deposit events on the Ethereum blockchain, stores deposit information, and sends notifications through a variety of means, including Telegram. Additionally, the project integrates Prometheus and Grafana to visualize metrics and alert on deposit activity.
@@ -138,8 +137,4 @@ This project includes a feature for sending Telegram notifications when a new de
 
 - **Telegram Bot Issues**: Double-check your bot token and chat ID in the `.env` file. Also, verify that your bot has permission to send messages to your chat.
 
-## Contributing
-Contributions are welcome! Feel free to open a pull request or issue.
 
-## License
-This project is licensed under the MIT License.
