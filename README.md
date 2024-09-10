@@ -58,7 +58,7 @@ npm install
 
 ### Run Locally
 ```bash
-node index.js
+node app.js
 ```
 However, I recommend running via Docker for easier setup.
 
